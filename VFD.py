@@ -1,5 +1,4 @@
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from multiprocessing.spawn import import_main_path
 from sqlalchemy import true
 from yt_dlp import YoutubeDL
 import PySimpleGUI as sg
@@ -10,7 +9,6 @@ import time
 sg.theme('DarkTeal7')
 
 def btn(inp_url):
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     thread1 = threading.Thread(args=(inp_url,), target=workDL, daemon=true)
     thread1.start()
     #window['condition'].update('完了')
