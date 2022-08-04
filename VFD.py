@@ -4,7 +4,6 @@ from yt_dlp import YoutubeDL
 import PySimpleGUI as sg
 import pyperclip
 import threading
-import time
 
 sg.theme('DarkTeal7')
 
