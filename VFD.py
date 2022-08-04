@@ -73,5 +73,3 @@ while True:
 window.close()
     #with ProcessPoolExecutor(max_workers=2) as executor:
         #executor.submit(workDL, ydl_opts, inp_url)
-
-
