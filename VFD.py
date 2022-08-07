@@ -57,9 +57,9 @@ while True:
         }
         btn(inp_url)
         
-        #window['condition'].update('完了')
-        #window.read(100)
-        #window['condition'].update('入力待ち...')
+        window['condition'].update('完了')
+        window.read(100)
+        window['condition'].update('入力待ち...')
 
     if event == '-TIMEOUT-':
         print('timeoutの中です')
