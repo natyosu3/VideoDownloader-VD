@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from sqlalchemy import true
 from yt_dlp import YoutubeDL
@@ -71,8 +70,6 @@ while True:
 window.close()
     #with ProcessPoolExecutor(max_workers=2) as executor:
         #executor.submit(workDL, ydl_opts, inp_url)
-=======
 import PySimpleGUI as sg
 
 print('test')
->>>>>>> 206da0f802c29962c8044bcec57df4093b82c8a2
