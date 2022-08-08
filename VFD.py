@@ -41,7 +41,6 @@ def main():
 
             ydl_opts = {
                 'outtmpl':path,
-                'prefer_ffmpeg':false
             }
             with ThreadPoolExecutor(max_workers=2) as executor:
                 executor.submit(workDL, ydl_opts, inp_url)
