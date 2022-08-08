@@ -1,75 +1,58 @@
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from sqlalchemy import true
+from sqlalchemy import false, true
 from yt_dlp import YoutubeDL
 import PySimpleGUI as sg
 import pyperclip
-import threading
 
 sg.theme('DarkTeal7')
 
-def btn(inp_url):
-    thread1 = threading.Thread(args=(inp_url,), target=workDL, daemon=true)
-    thread1.start()
-    #window['condition'].update('完了')
-    #window.Refresh()
-    
-def workDL(inp_url):
-    ydl_opts = {
-        'outtmpl':path,
-    }
+def workDL(ydl_opts, inp_url):
     with YoutubeDL(ydl_opts) as ydl:
         ydl.download([inp_url])
 
-layout = [
-[sg.Text('URL'), sg.Input(key='inp_url'), sg.Button('paste', key='-PASTE_BTN-')],
-[sg.Text('保存するファイル名'), sg.InputText(key='filename')],
-[sg.Text(size=(45, 2)), sg.Button('Download', key='-DL-')],
-[sg.Text('', key='condition')]
-]
+def main():
+    layout = [
+    [sg.Text('URL'), sg.Input(key='inp_url'), sg.Button('paste', key='-PASTE_BTN-')],
+    [sg.Text('保存するファイル名'), sg.InputText(key='filename')],
+    [sg.Text(size=(45, 2)), sg.Button('Download', key='download')],
+    [sg.Text('', key='condition')]
+    ]
 
-window = sg.Window('YouTube FastDownlorder', layout)
+    window = sg.Window('YouTube FastDownlorder', layout)
 
-while True:
-    event, value = window.read(timeout=100, timeout_key='-TIMEOUT-')
-    if event == '-PASTE_BTN-':
-        next = pyperclip.paste()
-        window['inp_url'].update(next)
-    
-
-    if event == sg.WIN_CLOSED:
-        break
-
-    filename = value['filename']
-    inp_url = value['inp_url']
-    filename = filename + '.mp4'
-    path = 'downloads/' + filename
-
-    if event == '-DL-':
-        window['condition'].update('処理中')
-
-    if event == '-DL-':
-
-        window['condition'].update('処理中')
-        window.Refresh()
-
-        ydl_opts = {
-            'outtmpl':path,
-        }
-        btn(inp_url)
+    while True:
+        event, value = window.read()
+        if event == '-PASTE_BTN-':
+            next = pyperclip.paste()
+            window['inp_url'].update(next)
         
-        window['condition'].update('完了')
-        window.read(100)
-        window['condition'].update('入力待ち...')
 
-    if event == '-TIMEOUT-':
-        print('timeoutの中です')
-        st = 'timeout'
-        window['condition'].update(st)
+        if event == sg.WIN_CLOSED:
+            break
 
+        filename = value['filename']
+        inp_url = value['inp_url']
+        filename = filename + '.mp4'
+        path = 'downloads/' + filename
 
-window.close()
+        if event == 'download':
+            window['condition'].update('処理中')
+            window.read(360)
+
+            ydl_opts = {
+                'outtmpl':path,
+                'prefer_ffmpeg':false
+            }
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                executor.submit(workDL, ydl_opts, inp_url)
+         
+            window['condition'].update('完了')
+            window.read(100)
+            window['condition'].update('入力待ち...')
+
+    window.close()
+
+if __name__ == '__main__':
+    main()
     #with ProcessPoolExecutor(max_workers=2) as executor:
         #executor.submit(workDL, ydl_opts, inp_url)
-import PySimpleGUI as sg
-
-print('test')
