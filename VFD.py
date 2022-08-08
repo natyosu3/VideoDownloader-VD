@@ -1,5 +1,5 @@
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-from sqlalchemy import false, true
+from concurrent.futures import ThreadPoolExecutor
+from sqlalchemy import false
 from yt_dlp import YoutubeDL
 import PySimpleGUI as sg
 import pyperclip
@@ -12,31 +12,31 @@ def workDL(ydl_opts, inp_url):
 
 def main():
     layout = [
-    [sg.Text('URL'), sg.Input(key='inp_url'), sg.Button('paste', key='-PASTE_BTN-')],
-    [sg.Text('保存するファイル名'), sg.InputText(key='filename')],
-    [sg.Text(size=(45, 2)), sg.Button('Download', key='download')],
-    [sg.Text('', key='condition')]
+    [sg.Text('URL'), sg.Input(key='-INP_URL-'), sg.Button('paste', key='-PASTE_BTN-')],
+    [sg.Text('保存するファイル名'), sg.InputText(key='-FILENAME-')],
+    [sg.Text(size=(45, 2)), sg.Button('Download', key='-DOWNLOAD-')],
+    [sg.Text('入力待ち...', key='-CONDITION-')]
     ]
 
-    window = sg.Window('YouTube FastDownlorder', layout)
+    window = sg.Window('Video FastDownlorder', layout)
 
     while True:
         event, value = window.read()
         if event == '-PASTE_BTN-':
             next = pyperclip.paste()
-            window['inp_url'].update(next)
+            window['-INP_URL-'].update(next)
         
 
         if event == sg.WIN_CLOSED:
             break
 
-        filename = value['filename']
-        inp_url = value['inp_url']
+        filename = value['-FILENAME-']
+        inp_url = value['-INP_URL-']
         filename = filename + '.mp4'
         path = 'downloads/' + filename
 
-        if event == 'download':
-            window['condition'].update('処理中')
+        if event == '-DOWNLOAD-':
+            window['-CONDITION-'].update('処理中')
             window.read(360)
 
             ydl_opts = {
@@ -46,9 +46,9 @@ def main():
             with ThreadPoolExecutor(max_workers=2) as executor:
                 executor.submit(workDL, ydl_opts, inp_url)
          
-            window['condition'].update('完了')
+            window['-CONDITION-'].update('完了')
             window.read(100)
-            window['condition'].update('入力待ち...')
+            window['-CONDITION-'].update('入力待ち...')
 
     window.close()
 
