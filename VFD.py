@@ -46,7 +46,7 @@ def main():
                 executor.submit(workDL, ydl_opts, inp_url)
          
             window['-CONDITION-'].update('完了')
-            window.read(500)
+            window.read(1200)
             window['-CONDITION-'].update('入力待ち...')
 
     window.close()
