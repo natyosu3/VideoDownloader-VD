@@ -5,3 +5,4 @@
 ....
 ## 注意事項
 ・youtubeで利用する場合youtubeの利用規約( https://www.youtube.com/static?template=terms&hl=ja&gl=JP )を確認して利用してください
+・著作権等には十分注意してご利用ください
