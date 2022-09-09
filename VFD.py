@@ -1,25 +1,70 @@
-from concurrent.futures import ThreadPoolExecutor
+import threading
+import time
 from yt_dlp import YoutubeDL
 import PySimpleGUI as sg
 import pyperclip
-from moviepy.editor import *
+import ffmpeg
 import os
+import sys
 
 sg.theme('DarkTeal12')
 
-def remove():
-    os.remove('video')
-    os.remove('audio')
+def merge(value, title, filename, window):
+  window['-CONDITION-'].update('merge')
 
-def workDL(ydl_opts, inp_url):
-    with YoutubeDL(ydl_opts) as ydl:
-        ydl.download([inp_url])
+  videopath = 'video.mp4'
+  audiopath = 'audio.wav'
+  output = title + '.mp4'
+
+  print(output)
+
+  while True:
+    is_file = os.path.isfile(videopath)
+    if is_file == True:
+      break
+
+  instream1 = ffmpeg.input(videopath)
+  instream2 = ffmpeg.input(audiopath)
+  stream = ffmpeg.output(instream1, instream2, output, vcodec="copy", acodec="copy")
+  ffmpeg.run(stream, overwrite_output=True)
+
+  time.sleep(2)
+
+  os.remove(videopath)
+  os.remove(audiopath)
+
+  time.sleep(3)
+
+  if value['-SAVE_NAME-'] == False:
+      os.replace(output, 'downloads/' + title + '.mp4')
+  else:
+      os.replace(output, 'downloads/' + filename + '.mp4')
+  
+  window['-CONDITION-'].update('完了')
+  time.sleep(3)
+  window['-CONDITION-'].update('入力待ち...')
+
+def start_merge(value, title, filename, window):
+  th = threading.Thread(target=merge, args=(value, title, filename, window))
+  th.start()
+
+def start(ydl_opts, inp_url, window):
+  th = threading.Thread(target=workDL, args=(ydl_opts, inp_url, window))
+  th.start()
+
+def workDL(ydl_opts, inp_url, window):
+  with YoutubeDL(ydl_opts) as ydl:
+    ydl.download([inp_url])
+  
+  window['-CONDITION-'].update('完了')
+  time.sleep(3)
+  window['-CONDITION-'].update('入力待ち...')
 
 def get_title(inp_url):
-    with YoutubeDL() as ydl:
-        res = ydl.extract_info(inp_url, download=False)
-        title = res['title']
-    return title
+  with YoutubeDL() as ydl:
+    res = ydl.extract_info(inp_url, download=False)
+    title = res['title']
+  return title
 
 def main():
     layout = [
@@ -29,6 +74,8 @@ def main():
         [sg.Text(size=(45, 2)), sg.Button('Download', key='-DOWNLOAD-')],
         [sg.Text('入力待ち...', key='-CONDITION-')]
     ]
+    aaa = sys.executable
+    print(aaa)
 
     window = sg.Window('Video Fast Downlorder', layout)
 
@@ -61,38 +108,22 @@ def main():
                     'outtmpl':path,
                     'format':'best'
                 }
-                with ThreadPoolExecutor(max_workers=2) as executor:
-                    executor.submit(workDL, ydl_opts, inp_url)
+                start(ydl_opts, inp_url, window)
 
             if value['-COMBO-'] == 'mp4最高品質':
 
                 ydl_opts = {
-                    'outtmpl':'video',
+                    'outtmpl':'video.mp4',
                     'format': 'bestvideo',
                 }
-                with ThreadPoolExecutor(max_workers=2) as executor:
-                    executor.submit(workDL, ydl_opts, inp_url)
+                start(ydl_opts, inp_url, window)
 
                 ydl_opts = {
-                    'outtmpl':'audio',
+                    'outtmpl':'audio.wav',
                     'format': 'bestaudio',
                 }
-                with ThreadPoolExecutor(max_workers=2) as executor:
-                    executor.submit(workDL, ydl_opts, inp_url)
-
-                clip = VideoFileClip("video")
-                audioclip = AudioFileClip("audio")
-                new_videoclip = clip.set_audio(audioclip)
-                new_videoclip.write_videofile('fin.mp4')
-                remove()
-                if value['-SAVE_NAME-'] == False:
-                    os.replace('fin.mp4', 'downloads/' + title + '.mp4')
-                else:
-                    os.replace('fin.mp4', 'downloads/' + filename + '.mp4')
-
-            window['-CONDITION-'].update('完了')
-            window.read(1200)
-            window['-CONDITION-'].update('入力待ち...')
+                start(ydl_opts, inp_url, window)
+                start_merge(value, title, filename, window)
 
     window.close()
 
