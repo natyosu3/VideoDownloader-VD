@@ -45,15 +45,14 @@ def merge(value, title, filename, window):
     os.remove(videopath)
     os.remove(audiopath)
 
-    time.sleep(1)
-
     if value['-SAVE_NAME-'] == False:
         os.replace(output, 'downloads/' + title + '.mp4')
     else:
         os.replace(output, 'downloads/' + filename + '.mp4')
     
     window['-CONDITION-'].update('完了')
-    time.sleep(3)
+    window['-DOWNLOAD-'].update(disabled=False)
+    time.sleep(1)
     window['-CONDITION-'].update('入力待ち...')
   except:
     print('error3')
@@ -72,9 +71,8 @@ def workDL(ydl_opts, inp_url, window):
     with YoutubeDL(ydl_opts) as ydl:
       ydl.download([inp_url])
     
-    #window['-CONDITION-'].update('完了')
-    time.sleep(3)
     window['-CONDITION-'].update('入力待ち...')
+    window['-DOWNLOAD-'].update(disabled=False)
   except:
     print('error2')
     window['-CONDITION-'].update('入力待ち...')
@@ -108,7 +106,7 @@ def main():
       [sg.Text('URL'), sg.Input(key='-INP_URL-'), sg.Button('paste', key='-PASTE_BTN-')],
       [sg.Checkbox('保存するファイル名', key='-SAVE_NAME-'), sg.InputText(key='-FILENAME-', size=(28, 2))],
       [sg.Combo(['mp4最高品質', 'mp3最高品質', 'mp4標準品質'], key='-COMBO-', size=(15, 1), readonly=True, default_value="選択して下さい")],
-      [sg.Text(size=(45, 2)), sg.Button('Download', key='-DOWNLOAD-')],
+      [sg.Text(size=(45, 2)), sg.Button('Download', key='-DOWNLOAD-', disabled=False)],
       [sg.Text('入力待ち...', key='-CONDITION-')]
   ]
 
@@ -116,69 +114,77 @@ def main():
   create_dir()
 
   while True:
-      event, value = window.read()
+    event, value = window.read()
 
-      if event == sg.WIN_CLOSED:
-          break
-      
-      if event == '-PASTE_BTN-':
-          next = pyperclip.paste()
-          window['-INP_URL-'].update(next)
+    if event == sg.WIN_CLOSED:
+        break
+    
+    if event == '-PASTE_BTN-':
+        next = pyperclip.paste()
+        window['-INP_URL-'].update(next)
 
-      filename = value['-FILENAME-']
-      inp_url = value['-INP_URL-']
+    filename = value['-FILENAME-']
+    inp_url = value['-INP_URL-']
 
-      if event == '-DOWNLOAD-':
-          window['-CONDITION-'].update('処理中')
-          if url_check(inp_url) == 'error':
-            sg.popup('正しいURLを入力してください', title='error')
-          if value['-COMBO-'] == '選択してください':
-            sg.popup_error('出力形式を選択してください', title='error')
+    if event == '-DOWNLOAD-':
+      window['-DOWNLOAD-'].update(disabled=True)
+      window['-CONDITION-'].update('処理中')
+      if url_check(inp_url) == 'error':
+        sg.popup_error('正しいURLを入力して下さい', title='error')
+        window['-DOWNLOAD-'].update(disabled=False)
+      if value['-COMBO-'] == '選択して下さい':
+        sg.popup_error('出力形式を選択して下さい', title='error')
+        window['-DOWNLOAD-'].update(disabled=False)
 
-          title = get_title(inp_url)
+      title = get_title(inp_url)
 
-          if value['-COMBO-'] == 'mp4標準品質':
-            try:
-              if value['-SAVE_NAME-'] == False:
-                  path = 'downloads/' + title + '.mp4'
-              else:
-                  path = 'downloads/' + filename + '.mp4'
+      if value['-COMBO-'] == 'mp4標準品質':
+        try:
+          if value['-SAVE_NAME-'] == False:
+              path = 'downloads/' + title + '.mp4'
+          else:
+              path = 'downloads/' + filename + '.mp4'
 
-              ydl_opts = {
-                'outtmpl':path,
-                'format':'best'
-              }
-              start(ydl_opts, inp_url, window)
-            except:
-              window['-CONDITION-'].update('入力待ち...')
+          ydl_opts = {
+            'outtmpl':path,
+            'format':'best'
+          }
+          start(ydl_opts, inp_url, window)
+        except:
+          print('error4')
+          window['-CONDITION-'].update('入力待ち...')
 
-          if value['-COMBO-'] == 'mp4最高品質':
+      if value['-COMBO-'] == 'mp4最高品質':
 
-              ydl_opts = {
-                'outtmpl':'video.mp4',
-                'format': 'bestvideo',
-              }
-              start(ydl_opts, inp_url, window)
+        ydl_opts = {
+          'outtmpl':'video.mp4',
+          'format': 'bestvideo',
+        }
+        start(ydl_opts, inp_url, window)
 
-              ydl_opts = {
-                'outtmpl':'audio.wav',
-                'format': 'bestaudio',
-              }
-              start(ydl_opts, inp_url, window)
-              time.sleep(1)
-              start_merge(value, title, filename, window)
+        ydl_opts = {
+          'outtmpl':'audio.wav',
+          'format': 'bestaudio',
+        }
+        start(ydl_opts, inp_url, window)
+        time.sleep(1)
+        start_merge(value, title, filename, window)
 
-          if value['-COMBO-'] == 'mp3最高品質':
-            if value['-SAVE_NAME-'] == False:
-              path = 'downloads/' + title + '.mp3'
-            else:
-              path = 'downloads/' + filename + '.mp3'
+      if value['-COMBO-'] == 'mp3最高品質':
+        try:
+          if value['-SAVE_NAME-'] == False:
+            path = 'downloads/' + title + '.mp3'
+          else:
+            path = 'downloads/' + filename + '.mp3'
 
-            ydl_opts = {
-              'outtmpl':path,
-              'format':'bestaudio',
-            }
-            start(ydl_opts, inp_url, window)
+          ydl_opts = {
+            'outtmpl':path,
+            'format':'bestaudio',
+          }
+          start(ydl_opts, inp_url, window)
+        except:
+          print('error5')
+          window['-CONDITION-'].update('入力待ち...')
 
   window.close()
 
