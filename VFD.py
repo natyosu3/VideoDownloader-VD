@@ -19,6 +19,7 @@ def merge(value, title, filename, window):
     videopath = 'video.mp4'
     audiopath = 'audio.wav'
     output = title + '.mp4'
+    output = output.replace('/', '//')
 
     print(output)
 
@@ -103,6 +104,13 @@ def create_dir():
   if bool == False:
     os.mkdir('./downloads')
 
+def remove():
+  os.remove('video.mp4')
+  os.remove('audio.wav')
+  os.remove('video.mp4.part')
+  os.remove('audio.wav.part')
+
+
 def url_check(inp_url):
   print('url_check')
   try:
@@ -130,7 +138,8 @@ def main():
     event, value = window.read()
 
     if event == sg.WIN_CLOSED:
-        break
+      remove()
+      break
     
     if event == '-PASTE_BTN-':
         next = pyperclip.paste()
@@ -183,7 +192,7 @@ def main():
           'format': 'bestaudio',
         }
         start(ydl_opts, inp_url, window)
-        #time.sleep(1)
+        time.sleep(1)
         start_merge(value, title, filename, window)
 
       if value['-COMBO-'] == 'mp3最高品質':
