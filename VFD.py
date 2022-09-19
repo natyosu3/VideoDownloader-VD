@@ -13,13 +13,14 @@ sg.theme('DarkTeal12')
 #print(base_path)
 #os.environ['Path'] = base_path
 
+videopath = 'video.webm'
+audiopath = 'audio.webm'
+
 def merge(value, title, filename, window):
   print('merge')
   try:
-    videopath = 'video.mp4'
-    audiopath = 'audio.wav'
-    output = title + '.mp4'
-    output = output.replace('/', '//')
+    title = title.replace('/', '')
+    output = title + '.webm'
 
     print(output)
 
@@ -48,14 +49,14 @@ def merge(value, title, filename, window):
       window['-CONDITION-'].update('marge...')
       if is_file == True:
         break
-
+    
     os.remove(videopath)
     os.remove(audiopath)
 
     if value['-SAVE_NAME-'] == False:
-        os.replace(output, 'downloads/' + title + '.mp4')
+        os.replace(output, 'downloads/' + output)
     else:
-        os.replace(output, 'downloads/' + filename + '.mp4')
+        os.replace(output, 'downloads/' + filename + '.webm')
 
     window['-DOWNLOAD-'].update(disabled=True)
     window['-CONDITION-'].update('完了')
@@ -105,10 +106,14 @@ def create_dir():
     os.mkdir('./downloads')
 
 def remove():
-  os.remove('video.mp4')
-  os.remove('audio.wav')
-  os.remove('video.mp4.part')
-  os.remove('audio.wav.part')
+  if (os.path.isfile(videopath)):
+    os.remove(videopath)
+  if (os.path.isfile(audiopath)):
+    os.remove(audiopath)
+  if (os.path.isfile('video.mp4.part')):
+    os.remove('video.mp4.part')
+  if (os.path.isfile('audio.wav.part')):
+    os.remove('audio.wav.part')
 
 
 def url_check(inp_url):
@@ -126,7 +131,7 @@ def main():
   layout = [
       [sg.Text('URL'), sg.Input(key='-INP_URL-'), sg.Button('paste', key='-PASTE_BTN-')],
       [sg.Checkbox('保存するファイル名', key='-SAVE_NAME-'), sg.InputText(key='-FILENAME-', size=(28, 2))],
-      [sg.Combo(['mp4最高品質', 'mp3最高品質', 'mp4標準品質'], key='-COMBO-', size=(15, 1), readonly=True, default_value="選択して下さい")],
+      [sg.Combo(['webm最高品質', 'mp3最高品質', 'mp4標準品質'], key='-COMBO-', size=(15, 1), readonly=True, default_value="選択して下さい")],
       [sg.Text(size=(45, 2)), sg.Button('Download', key='-DOWNLOAD-', disabled=False)],
       [sg.Text('入力待ち...', key='-CONDITION-')]
   ]
@@ -142,8 +147,8 @@ def main():
       break
     
     if event == '-PASTE_BTN-':
-        next = pyperclip.paste()
-        window['-INP_URL-'].update(next)
+      next = pyperclip.paste()
+      window['-INP_URL-'].update(next)
 
     filename = value['-FILENAME-']
     inp_url = value['-INP_URL-']
@@ -166,9 +171,9 @@ def main():
       if value['-COMBO-'] == 'mp4標準品質':
         try:
           if value['-SAVE_NAME-'] == False:
-              path = 'downloads/' + title + '.mp4'
+            path = 'downloads/' + title + '.mp4'
           else:
-              path = 'downloads/' + filename + '.mp4'
+            path = 'downloads/' + filename + '.mp4'
 
           ydl_opts = {
             'outtmpl':path,
@@ -179,16 +184,15 @@ def main():
           print('error4')
           window['-CONDITION-'].update('入力待ち...')
 
-      if value['-COMBO-'] == 'mp4最高品質':
-
+      if value['-COMBO-'] == 'webm最高品質':
         ydl_opts = {
-          'outtmpl':'video.mp4',
+          'outtmpl':videopath,
           'format': 'bestvideo',
         }
         start(ydl_opts, inp_url, window)
 
         ydl_opts = {
-          'outtmpl':'audio.wav',
+          'outtmpl':audiopath,
           'format': 'bestaudio',
         }
         start(ydl_opts, inp_url, window)
@@ -214,4 +218,4 @@ def main():
   window.close()
 
 if __name__ == '__main__':
-    main()
+  main()
