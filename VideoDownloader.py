@@ -116,10 +116,10 @@ def remove():
     os.remove(videopath)
   if (os.path.isfile(audiopath)):
     os.remove(audiopath)
-  if (os.path.isfile('video.mp4.part')):
-    os.remove('video.mp4.part')
-  if (os.path.isfile('audio.wav.part')):
-    os.remove('audio.wav.part')
+  if (os.path.isfile('video.webm.part')):
+    os.remove('video.webm.part')
+  if (os.path.isfile('audio.webm.part')):
+    os.remove('audio.webm.part')
 
 
 def url_check(inp_url):
