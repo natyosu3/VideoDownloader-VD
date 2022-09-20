@@ -9,7 +9,7 @@ youtubeから動画・音声をダウンロードできます
 <br>
 
 ## **使い方**
-- Releasesページ(https://github.com/natyosu3/VideoDownloader-VD/releases)からzipファイルをダウンロードして、解凍を行いVD.exeファイルを起動してください。
+- Releasesページ( https://github.com/natyosu3/VideoDownloader-VD/releases )からzipファイルをダウンロードして、解凍を行いVD.exeファイルを起動してください。
 - 起動時、exeファイルのカレントディレクトリに'downloads'フォルダが作成されます。(このフォルダ内にダウンロードした動画・音声が入ります)
 - ファイル名を指定したい場合は'ファイル名'横のチェックボックスにチェックを入れて指定して下さい。チェックを入れない場合は、動画タイトルがファイル名になります。
 - 現時点(R4/9/20)では最高画質(webm形式),標準画質(mp4形式),最高品質(mp3形式)を選択できます。
