@@ -7,11 +7,11 @@ import ffmpeg
 import os
 import sys
 
-sg.theme('DarkTeal12')
+sg.theme('LightGrey4')
 
-#base_path = sys._MEIPASS
-#print(base_path)
-#os.environ['Path'] = base_path
+base_path = sys._MEIPASS
+print(base_path)
+os.environ['Path'] = base_path
 
 videopath = 'video.webm'
 audiopath = 'audio.webm'
@@ -25,13 +25,19 @@ def merge(value, title, filename, window):
     print(output)
 
     while True:
+      is_file = os.path.isfile(audiopath)
+      window['-DOWNLOAD-'].update(disabled=True)
+      window['-CONDITION-'].update('downloading...')
+      if is_file == True:
+        break
+
+    while True:
       is_file = os.path.isfile(videopath)
       window['-DOWNLOAD-'].update(disabled=True)
       window['-CONDITION-'].update('downloading...')
       if is_file == True:
         break
 
-    #time.sleep(1)
     window['-CONDITION-'].update('merge')
     window['-DOWNLOAD-'].update(disabled=True)
     
@@ -126,7 +132,6 @@ def url_check(inp_url):
     re = 'error'
     return re
     
-
 def main():
   layout = [
       [sg.Text('URL'), sg.Input(key='-INP_URL-'), sg.Button('paste', key='-PASTE_BTN-')],
@@ -136,7 +141,7 @@ def main():
       [sg.Text('入力待ち...', key='-CONDITION-')]
   ]
 
-  window = sg.Window('Video Fast Downlorder', layout)
+  window = sg.Window('Video downloader', layout, icon=base_path + '\main.ico')
   create_dir()
 
   while True:
@@ -152,9 +157,6 @@ def main():
 
     filename = value['-FILENAME-']
     inp_url = value['-INP_URL-']
-
-    if event == '-DOWNLOAD-' and value['-COMBO-'] == 'mp4標準品質':
-      print('理論演算子')
 
     if event == '-DOWNLOAD-':
       window['-DOWNLOAD-'].update(disabled=True)
