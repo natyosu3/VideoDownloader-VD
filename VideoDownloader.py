@@ -141,7 +141,7 @@ def main():
       [sg.Text('入力待ち...', key='-CONDITION-')]
   ]
 
-  window = sg.Window('Video downloader', layout, icon=base_path + '\main.ico')
+  window = sg.Window('Video Downloader', layout, icon=base_path + '\main.ico')
   create_dir()
 
   while True:
